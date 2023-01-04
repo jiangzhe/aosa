@@ -74,6 +74,15 @@ impl StringArena {
             Ok(std::str::from_utf8_unchecked(bs))
         }
     }
+
+    /// Renew the arena for future usage.
+    /// This is safe because all string refs associated to this arena
+    /// must be dropped before this method call.
+    #[inline]
+    pub fn renew(self) -> Self {
+        self.idx.set(0);
+        self
+    }
 }
 
 
@@ -93,5 +102,7 @@ mod tests {
         let s2 = sa.add("world").unwrap();
         assert_eq!(s2, "world");
         assert!(sa.add("rust").is_err());
+        let sa2 = sa.renew();
+        assert!(sa2.is_empty());
     }
 }
